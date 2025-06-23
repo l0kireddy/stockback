@@ -29,4 +29,5 @@ def get_stock_history(symbol):
         return jsonify({"error": "Could not fetch history"}), 400
     
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get("PORT", 5000))  # use PORT from environment if available
+    app.run(host="0.0.0.0", port=port)
