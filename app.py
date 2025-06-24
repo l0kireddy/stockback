@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
 import yfinance as yf
-import requests
+from predictor import train_and_predict
 import os
 
 app = Flask(__name__)
@@ -28,6 +28,16 @@ def get_stock_history(symbol):
         return jsonify(data)
     except Exception as e:
         return jsonify({"error": "Could not fetch history"}), 400
+
+@app.route("/api/stock/<symbol>/predict")
+def predict_stock(symbol):
+    try:
+        predicted_price = train_and_predict(symbol)
+        if predicted_price is None:
+            return jsonify({"error": "Insufficient data"}), 400
+        return jsonify({"predicted_price": round(predicted_price, 2)})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  # use PORT from environment if available
